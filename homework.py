@@ -14,7 +14,7 @@ CHAT_ID = os.environ.get('TELEGRAM_CHAT_ID')
 
 yabot = telegram.Bot(TELEGRAM_TOKEN)
 
-logging.basicConfig(level=logging.DEBUG,
+logging.basicConfig(level=logging.INFO,
                     format='%(asctime)s %(levelname)s %(lineno)s %(message)s')
 
 log = logging.getLogger('__name__')
@@ -44,7 +44,7 @@ def get_homework_statuses(current_timestamp):
                                      params={'from_date': current_timestamp})
     json = homework_statuses.json()
     if 'message' in json:
-        err_msg = "API error: " + json.get('message')
+        err_msg = "API error: " + json.get('message') + json
         log.error(err_msg)
         send_message(err_msg)
     return json
@@ -61,14 +61,18 @@ def main():
     current_timestamp = int(time.time())  # начальное значение timestamp
     log.debug('Start watching homework')
     send_message('Start watching...')
-
+    status = ''
     while True:
         try:
             # смотрим статус домашки начиная с текущего момента
             new_homework = get_homework_statuses(current_timestamp)
+
             if new_homework.get('homeworks'):
-                send_message(parse_homework_status(
-                    new_homework.get('homeworks')[0]), yabot)
+                homework = new_homework.get('homeworks')[0]
+                if 'status' in homework and homework['status'] != status:
+                    status = homework['status']
+                    send_message(parse_homework_status(
+                        new_homework.get('homeworks')[0]), yabot)
 
             if 'error' in new_homework:
                 msg_err = 'API error: {}'.format(
@@ -85,7 +89,7 @@ def main():
             err_msg = f'Бот столкнулся с ошибкой: {e}'
             log.error(err_msg)
             send_message(err_msg)
-            time.sleep(5)
+            time.sleep(60)
 
 
 if __name__ == '__main__':
