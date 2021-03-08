@@ -5,18 +5,22 @@ import time
 import requests
 import telegram
 from dotenv import load_dotenv
+from logging.handlers import RotatingFileHandler
 
 load_dotenv()
 
-PRAKTIKUM_TOKEN = os.getenv("PRAKTIKUM_TOKEN")
-TELEGRAM_TOKEN = os.getenv('TELEGRAM_TOKEN')
-CHAT_ID = os.getenv('TELEGRAM_CHAT_ID')
+PRAKTIKUM_TOKEN = os.environ.get("PRAKTIKUM_TOKEN")
+TELEGRAM_TOKEN = os.environ.get('TELEGRAM_TOKEN')
+CHAT_ID = os.environ.get('TELEGRAM_CHAT_ID')
+
 yabot = telegram.Bot(TELEGRAM_TOKEN)
 
-logging.basicConfig(level=logging.INFO,
+logging.basicConfig(level=logging.DEBUG,
                     format="%(asctime)s %(levelname)s %(lineno)s %(message)s")
-log = logging.getLogger('__name__')
 
+log = logging.getLogger('__name__')
+handler = RotatingFileHandler('yabot.log', maxBytes=10000, backupCount=2)
+log.addHandler(handler)
 
 def parse_homework_status(homework):
     homework_name = homework['homework_name']
@@ -80,7 +84,6 @@ def main():
             err_msg = f'Бот столкнулся с ошибкой: {e}'
             log.error(err_msg)
             send_message(err_msg)
-
             time.sleep(5)
 
 
