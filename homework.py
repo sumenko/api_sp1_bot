@@ -22,9 +22,8 @@ log = logging.getLogger('__name__')
 
 def parse_homework_status(homework):
     homework_name = homework['homework_name']
-    if homework.get('status') == 'reviewing':
-        return 'Работа взята в ревью.'
-
+    if homework['status'] == 'reviewing':
+        return 'Работа взята в ревью'
     if homework['status'] == 'rejected':
         verdict = 'К сожалению в работе нашлись ошибки.'
     else:
@@ -61,18 +60,14 @@ def main():
     current_timestamp = int(time.time())  # начальное значение timestamp
     log.debug('Start watching homework')
     send_message('Start watching...')
-    status = ''
     while True:
         try:
             # смотрим статус домашки начиная с текущего момента
             new_homework = get_homework_statuses(current_timestamp)
 
             if new_homework.get('homeworks'):
-                homework = new_homework.get('homeworks')[0]
-                if 'status' in homework and homework['status'] != status:
-                    status = homework['status']
-                    send_message(parse_homework_status(
-                        new_homework.get('homeworks')[0]), yabot)
+                send_message(parse_homework_status(
+                    new_homework.get('homeworks')[0]), yabot)
 
             if 'error' in new_homework:
                 msg_err = 'API error: {}'.format(
