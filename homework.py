@@ -5,7 +5,6 @@ import time
 import requests
 import telegram
 from dotenv import load_dotenv
-from logging.handlers import RotatingFileHandler
 
 load_dotenv()
 
@@ -15,12 +14,10 @@ CHAT_ID = os.environ.get('TELEGRAM_CHAT_ID')
 
 yabot = telegram.Bot(TELEGRAM_TOKEN)
 
-logging.basicConfig(level=logging.DEBUG,
+logging.basicConfig(level=logging.INFO,
                     format="%(asctime)s %(levelname)s %(lineno)s %(message)s")
 
 log = logging.getLogger('__name__')
-handler = RotatingFileHandler('yabot.log', maxBytes=10000, backupCount=2)
-log.addHandler(handler)
 
 def parse_homework_status(homework):
     homework_name = homework['homework_name']
