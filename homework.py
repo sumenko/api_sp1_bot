@@ -14,18 +14,22 @@ CHAT_ID = os.environ.get('TELEGRAM_CHAT_ID')
 
 yabot = telegram.Bot(TELEGRAM_TOKEN)
 
-logging.basicConfig(level=logging.INFO,
+logging.basicConfig(level=logging.DEBUG,
                     format="%(asctime)s %(levelname)s %(lineno)s %(message)s")
 
 log = logging.getLogger('__name__')
 
 def parse_homework_status(homework):
     homework_name = homework['homework_name']
+    if homework.get('status') == 'reviewing':
+        return 'Работа взята в ревью'
+        
     if homework['status'] == 'rejected':
         verdict = 'К сожалению в работе нашлись ошибки.'
     else:
         verdict = ('Ревьюеру всё понравилось, можно '
                    'приступать к следующему уроку.')
+    
     return f'У вас проверили работу "{homework_name}"!\n\n{verdict}'
 
 
@@ -61,7 +65,6 @@ def main():
         try:
             # смотрим статус домашки начиная с текущего момента
             new_homework = get_homework_statuses(current_timestamp)
-
             if new_homework.get('homeworks'):
                 send_message(parse_homework_status(
                     new_homework.get('homeworks')[0]), yabot)
