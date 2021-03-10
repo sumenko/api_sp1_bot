@@ -23,7 +23,7 @@ log = logging.getLogger('__name__')
 
 def parse_homework_status(homework):
     statuses = {
-        'reviewing': 'Работа взята в ревью',
+        'reviewing': 'Работа взята в ревью.',
         'rejected': 'К сожалению в работе нашлись ошибки.',
         'approved': ('Ревьюеру всё понравилось, можно '
                      'приступать к следующему уроку.'),
@@ -31,9 +31,19 @@ def parse_homework_status(homework):
     try:
         homework_name = homework['homework_name']
         verdict = statuses[homework['status']]
+
+        if homework['status'] == 'reviewing':
+            return verdict
+
         return f'У вас проверили работу "{homework_name}"!\n\n{verdict}'
+
     except KeyError:
         return 'Неверный ответ сервера'
+
+
+class RequestError(Exception):
+    """ ошибка при выполнении запроса к апи """
+    pass
 
 
 def get_homework_statuses(current_timestamp):
@@ -48,16 +58,13 @@ def get_homework_statuses(current_timestamp):
                                              f'OAuth {PRAKTIKUM_TOKEN}'},
                                          params={'from_date':
                                                  current_timestamp})
-    except requests.RequestException as e:  # не уверен что этот нужен
-        error_report(f'При выполнении запроса произолша ошибка: {e}')
-        return None
-    except requests.HTTPError as e:
-        error_report(f'При выполнении запроса произолша ошибка: {e}')
-        return None
+
+    except requests.RequestException as e:
+        raise RequestError(f'ошибка GET запроса "{e}"')
 
     json = homework_statuses.json()
     if 'message' in json:
-        error_report('API error: ' + json.get('message') + json)
+        error_report(f'Ошибка API. Пришёл ответ: {json}')
     log.debug(json)
     return json
 
@@ -100,7 +107,7 @@ def main():
                     new_homework.get('homeworks')[0]), yabot)
 
             if 'error' in new_homework:
-                msg_err = 'API error: {}'.format(
+                msg_err = 'Ошибка API: {}'.format(
                     new_homework.get('error').get('error'))
                 error_report(msg_err)
 
