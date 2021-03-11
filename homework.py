@@ -108,7 +108,7 @@ def main():
 
             if 'error' in new_homework:
                 msg_err = 'Ошибка API: {}'.format(
-                    new_homework.get('error').get('error'))
+                    new_homework.get('error'))
                 error_report(msg_err)
 
             # обновить timestamp, поскольку до этого момента данные уже есть
