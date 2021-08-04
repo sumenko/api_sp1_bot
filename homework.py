@@ -13,6 +13,9 @@ PRAKTIKUM_TOKEN = os.environ.get('PRAKTIKUM_TOKEN')
 TELEGRAM_TOKEN = os.environ.get('TELEGRAM_TOKEN')
 CHAT_ID = os.environ.get('TELEGRAM_CHAT_ID')
 
+CHECK_INTERVAL = 300
+ERROR_INTERVAL = 60
+
 yabot = telegram.Bot(TELEGRAM_TOKEN)
 
 logging.basicConfig(level=logging.INFO,
@@ -96,7 +99,7 @@ def main():
     current_timestamp = get_UTC_stamp()  # начальное значение timestamp
 
     log.debug('Start watching homework')
-    send_message('Start watching...')
+    send_message(f'Start watching...\nInterval: {CHECK_INTERVAL}')
     while True:
         try:
             # смотрим статус домашки начиная с текущего момента
@@ -114,12 +117,12 @@ def main():
             # обновить timestamp, поскольку до этого момента данные уже есть
             current_timestamp = new_homework.get('current_date',
                                                  current_timestamp)
-            time.sleep(300)  # опрашивать раз в пять минут
+            time.sleep(CHECK_INTERVAL)  # опрашивать раз в пять минут
 
         except Exception as e:
             err_msg = f'Бот столкнулся с ошибкой: {e}'
             error_report(err_msg)
-            time.sleep(60)
+            time.sleep(ERROR_INTERVAL)
 
 
 if __name__ == '__main__':

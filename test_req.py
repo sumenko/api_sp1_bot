@@ -6,6 +6,8 @@ import time
 from pprint import pprint
 load_dotenv()
 
+
+# Test requests
 PRAKTIKUM_TOKEN = os.getenv('PRAKTIKUM_TOKEN')
 
 
