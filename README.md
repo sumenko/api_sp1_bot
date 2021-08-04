@@ -1,6 +1,7 @@
 # Homework status checker telegram bot
 
 ## Abstract
+Working with Yandex.Praktikum API.
 Bot checks status of homework `reviewing`, `rejected`, `approved` and send a message to telegram chat if got one of them.
 
 ## Install
