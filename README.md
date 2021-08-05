@@ -3,6 +3,7 @@
 ## Abstract
 Working with Yandex.Praktikum API.
 Bot checks status of homework `reviewing`, `rejected`, `approved` and send a message to telegram chat if got one of them.
+The core library is [python-telegram-bot](https://github.com/python-telegram-bot/python-telegram-bot)
 
 ## Install
 1. Install python 3.7 or later

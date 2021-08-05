@@ -2,6 +2,7 @@ import datetime
 import logging
 import os
 import time
+from platform import node
 
 import requests
 import telegram
@@ -76,7 +77,7 @@ def send_message(message, bot_client=None):
     """ Отправляет сообщение от бота по умолчанию или переданного """
     if not bot_client:
         bot_client = yabot
-    return bot_client.send_message(CHAT_ID, message)
+    return bot_client.send_message(CHAT_ID, message, parse_mode='Markdown')
 
 
 def error_report(message):
@@ -99,7 +100,7 @@ def main():
     current_timestamp = get_UTC_stamp()  # начальное значение timestamp
 
     log.debug('Start watching homework')
-    send_message(f'Start watching...\nInterval: {CHECK_INTERVAL}')
+    send_message(f'Start bot at *{node()}*.\nInterval: *{CHECK_INTERVAL}*')
     while True:
         try:
             # смотрим статус домашки начиная с текущего момента
